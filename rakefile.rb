@@ -24,7 +24,7 @@ BUILD_NUMBER = build_number
 props = { :stage => File.expand_path("build"), :artifacts => File.expand_path("artifacts") }
 
 desc "**Default**, compiles and runs tests"
-task :default => [:compile, :unit_test]
+task :default => [:compile, :run_jasmine]
 
 desc "Target used for the CI server"
 task :ci => [:update_all_dependencies, :default, :history, :publish]
@@ -93,4 +93,19 @@ task :unit_test do
   file.close
   
   runner.executeTests tests
+end
+
+desc "Opens the Serenity Jasmine Runner in interactive mode"
+task :open_jasmine do
+	serenity "jasmine interactive src/serenity.txt"
+end
+
+desc "Runs the Jasmine tests"
+task :run_jasmine do
+	serenity "jasmine run src/serenity.txt"
+end
+
+def self.serenity(args)
+  serenity = Platform.runtime(Nuget.tool("Serenity", "SerenityRunner.exe"))
+  sh "#{serenity} #{args}"
 end
